@@ -1,23 +1,31 @@
 #!/usr/bin/python
+""" Class for gathering and processing data from the net """
+
+from c_db import Db
 
 import urllib.request
 import pandas as pd
-#import MySQLdb
+import mysql.connector
 
-class GetData(object):
-    def downloadData(self, url, file_name):
+class GetData:
+    """ Downloads and import data to database """
+
+    def __init__(self):
+        self.database = Db()
+
+    def download_data(self, url, file_name):
+        """ Downloads data from a given url """
+
         urllib.request.urlretrieve(url, file_name)
 
-    def importFileToDb(self, file_name):
+    def import_file_to_db(self, file_name):
+        """ Imports data to database """
+
         data = pd.read_excel(file_name)
-        print(data)
-        #book = xlrd.open_workbook(file_name)
-        #sheet = book.sheet_by_name("WEOApr2017all")
+        countries = data.Country.unique()
 
-        #database = MySQLbd.connect(host = "localhost", user = "oliver", passwd = "oliverkobak", db = "econdata_raw")
-        #cusrsor = database.cursor()
-
-        query = """INSERT INTO weo_all 
+        self.database.query("CREATE TABLE econdata.test_table (weo_country_code CHAR(3), iso CHAR(3), PRIMARY KEY(weo_country_code))")
+        query = """INSERT INTO weo_all
                     (
                         weo_country_code,
                         iso,
